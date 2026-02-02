@@ -3,7 +3,54 @@ const STORAGE_KEY = 'roomsync_rooms';
 
 export const getRooms = () => {
     const rooms = localStorage.getItem(STORAGE_KEY);
-    return rooms ? JSON.parse(rooms) : {};
+    let parsedRooms = rooms ? JSON.parse(rooms) : {};
+
+    // Seed Demo Rooms if they don't exist
+    const seeds = [
+        {
+            code: 'DEMO123',
+            name: 'Demo House',
+            members: [
+                { name: 'Alice', role: 'Admin', status: '🏠 At Home', avatar: 'Alice' },
+                { name: 'Bob', role: 'Member', status: '🏢 At Work', avatar: 'Bob' },
+                { name: 'Charlie', role: 'Member', status: '🏃 Gym', avatar: 'Charlie' }
+            ]
+        },
+        {
+            code: 'SKY123',
+            name: 'Sky Castle 🏰',
+            members: [
+                { name: 'Queen', role: 'Admin', status: '🏰 Throneroom', avatar: 'Queen' },
+                { name: 'Knight', role: 'Member', status: '🛡️ Guarding', avatar: 'Knight' }
+            ]
+        },
+        {
+            code: 'CHILL9',
+            name: 'Chill Zone 🧊',
+            members: [
+                { name: 'CoolCat', role: 'Admin', status: '🧊 Chilling', avatar: 'CoolCat' }
+            ]
+        }
+    ];
+
+    let dirty = false;
+    seeds.forEach(seed => {
+        if (!parsedRooms[seed.code]) {
+            parsedRooms[seed.code] = {
+                name: seed.name,
+                code: seed.code,
+                members: seed.members,
+                createdAt: Date.now()
+            };
+            dirty = true;
+        }
+    });
+
+    if (dirty) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsedRooms));
+    }
+
+    return parsedRooms;
 };
 
 export const saveRooms = (rooms) => {
